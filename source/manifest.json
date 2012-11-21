@@ -1,0 +1,23 @@
+{
+    "name":"Find the Search",
+    "version":"0.2",
+    "description":"Plugin find search field on the current site and put cursor in it. Just use ctrl+i.",
+    "icons": {
+        "128": "images/icon.png",
+        "48": "images/icon.png",
+        "16": "images/icon.png"
+    },
+    "content_scripts": [
+        {
+            "matches": ["http://*/*", "https://*/*"],
+            "js": ["/third_apps/mousetrap.min.js", "script.js"],
+            "run_at": "document_idle"
+        }
+    ],
+    "permissions": [
+        "http://*/*", 
+        "https://*/*"
+    ],
+
+    "manifest_version": 2
+}

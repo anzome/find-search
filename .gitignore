@@ -1,0 +1,8 @@
+#key files#
+*.pem
+
+#package#
+*.crx
+
+#other files#
+other/
