@@ -6,33 +6,61 @@ TODO
 
 */
 //declare vars for future assignment into functions 
-(function (window, document) {
+(function(window, document){
 var inputs = [];
-var search_inputs = [];
-var search_amount = 0;
+var trash = [];
 var next_input = 0;
 
 function init(){
     //assign vars once on a page load, use it on every event
     inputs = document.getElementsByTagName("input");
+    
+    //this for mousetrap lib that not fireing if some text field is focused
+    //this add special class to that active element
     toggle_mousetrap(document.activeElement);
-    console.log(inputs);
 
-    if (inputs.length === 0) {
-        return false;
+    //FIX: ugly code, I should beatify it
+    //1
+    if (inputs.length > 0){
+        is_text_input.exclude = true; //stupid croocked-nail
+        inputs = check_list(inputs, is_text_input);
+    };
+    //2
+    if (inputs.length > 0){
+        console.log(2);
+        inputs = check_list(inputs, have_q_index);
+    };
+    //3
+    if (inputs.length > 0){
+        console.log(3);          
+        inputs = check_list(inputs, have_search);
+    };
+    //finds parents and adds them to inputs.no[n].parents 
+    if (inputs.length === 0){
+        for (var j = 0; j < inputs.no.length; j++){
+            inputs.no[j].parents = node_parents(inputs.no[j]);
+        }
+    }
+    //4
+    if (inputs.yes.length === 0){
+        console.log(4);
+        inputs = check_list(inputs, have_search, true);
+    };
+    //5
+    if (inputs.yes.length === 0){
+        console.log(5);
+        inputs = check_list(inputs, is_navbar, true);
+    };
+    console.log("--> yes: ", inputs.yes);
+    console.log("--> no: ", inputs.no);
+    if (inputs.yes.length > 0){
+        console.log(true);
+        return true;
     }
     else {
-        search_inputs = get_search_inputs(inputs);
-        console.log(search_inputs);
-        if (search_inputs.length > 0){
-            search_amount = search_inputs.length;
-            //console.log(search_amount);
-            return true;
-        }
-        else {
-            return false;
-        }
-    };
+        console.log(false);
+        return false;
+    }
 }
 
 function toggle_mousetrap(element){
@@ -45,37 +73,6 @@ function toggle_mousetrap(element){
             element.setAttribute("class", element.className + " mousetrap");
         };
     };   
-}
-
-function get_search_inputs(inputs){
-    var preliminary_list = [];
-    var weight = 0;
-    var parents;
-
-    for (var i = 0, input; i <= inputs.length-1; i++) {
-        input = inputs[i];
-        if (min_check(input)){
-            //element meets the minimal criteria
-            preliminary_list.push(input);
-        };
-    }
-
-    //what if we have several inputs that passing minimal check?
-    if (preliminary_list.length > 0) {
-        for (var i = 0, input; i <= preliminary_list.length-1; i++){
-            input = preliminary_list[i];
-            input.parents = node_parents(input);
-            if(check(input)){
-                search_inputs.push(input);
-            }
-        }
-    };
-
-    // do sorting on search_inputs 
-    if (search_inputs.length > 0) {return search_inputs}
-    //if we don't find inputs on a page or if all inputs is not for search
-    else {return false;}
-    
 }
 
 function node_parents(node){
@@ -92,55 +89,123 @@ function node_parents(node){
     return list;
 }
 
-function min_check(entity) {
-    // if we got not text input elements
-    if ((entity.tagName.toLowerCase() === "input") && (entity.type.toLowerCase() !== "text")) {
-        return false;
+function is_text_input(entity){
+    if (entity.type.toLowerCase() === "text"){
+        return true;
     }
     else {
-        return true;
+        return false;
     }
 }
 
-function check(entity){
-    //makes full list of elements that we want to check (input itself and parents)
-    var ones = entity.parents;
-    ones.unshift(entity);
-    //checks everyone element in our list
-    var find_search = /search/i;
+function have_q_index(entity){
     var find_q = /^q$/i;
-    for (var i = 0, one; i <= ones.length - 1; i++){    
-        one = ones[i];       
-        if (find_q.test(one.id) || find_search.test(one.id)) {
-            return true;
-        }
-        else if (find_search.test(one.name)) {
-            return true;
-        }
-        else if (find_search.test(one.className)) {
-            return true;
-        }        
+    if (find_q.test(entity.id)){
+        return true;
     }
-    //if no item fits 
+    else {
+        return false;
+    }
+}
+
+function have_search(entity){
+    var find_search = /search/i;
+    var tests = [
+        find_search.test(entity.id),
+        find_search.test(entity.className),
+        find_search.test(entity.name)
+    ]
+    for (var i = 0, length = tests.length; i < length; i++){
+        if (tests[i] === true) { return true; } 
+    }
+
     return false;
 }
 
+function is_navbar(entity){
+    var find_nav = /[^\w]nav[^\w]/i;
+    var tests = [
+        find_nav.test(entity.id),
+        find_nav.test(entity.className),
+        find_nav.test(entity.name)
+    ]
+    for (var i = 0, length = tests.length; i < length; i++){
+        if (tests[i] === true) { return true; } 
+    }
+
+    return false;
+}
+
+function is_search (){
+    return {
+        type: "exclude",
+        test: function (entity){
+            if (entity.is_search === true){
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+    }    
+}
+
+function check_list(inputs, check_function, parents){
+    var temp = [];
+    var exclude = check_function.exclude;
+    //default value
+    if(parents === undefined) {parents = false};
+    if(exclude === undefined) {exclude = false};
+
+    //FIX: add inputs.filter() here
+    if (parents === false){
+        for (var i = 0; i < inputs.yes.length; i++){
+            if (check_function(inputs.yes[i])) {
+                temp.push(inputs.yes[i]);
+            }
+            else {
+                if (exclude === false) {
+                    inputs.no.push(inputs.yes[i]);
+                }
+            }
+        }
+    }
+    
+    else if (parents === true) {
+        if (inputs.no.length > 0){
+            for (var i = 0; i < inputs.no.length; i++){
+                parents = inputs.no[i].parents;
+                for (var j = 0; j < parents.length; j++) {
+                    if (check_function(parents[j])){
+                        temp.push(inputs.no[i]);
+                    }
+                } 
+            }
+        }
+    }
+    inputs.yes = temp;
+
+    return inputs;
+}
+
 function search_focus(){
-    if (next_input > search_amount-1){
+    if (next_input > inputs.yes.lenght-1){
         next_input = 0;
     };
-    if(search_inputs[next_input]){
+    if(inputs.yes[next_input]){
         //remove class mousetrap from input
         toggle_mousetrap(document.activeElement);
-        search_inputs[next_input].focus();
+        inputs.yes[next_input].focus();
         //add class mousetrap on the new input
-        toggle_mousetrap(search_inputs[next_input])
+        toggle_mousetrap(inputs.yes[next_input])
         next_input++;
     }
+    //FIX: why it is here?
     else {};
 }
 
 window.onload = function () {
+    console.log(inputs.yes);
     if (init()){
         //see mousetrap lib at http://craig.is/killing/mice
         Mousetrap.bind('ctrl+i', function(e, combo){
@@ -149,4 +214,5 @@ window.onload = function () {
         });        
     };
 }
+
 })(window, document);

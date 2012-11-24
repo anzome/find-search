@@ -1,6 +1,6 @@
 {
     "name":"Find the Search",
-    "version":"0.2",
+    "version":"0.3",
     "description":"Plugin find search field on the current site and put cursor in it. Just use ctrl+i.",
     "icons": {
         "128": "images/icon.png",
