@@ -10,8 +10,12 @@
     "content_scripts": [
         {
             "matches": ["http://*/*", "https://*/*"],
-            "js": ["/third_apps/mousetrap.min.js", "script.js"],
-            "run_at": "document_idle"
+            "js": [
+                    "/third_apps/mousetrap.min.js", 
+                    "/third_apps/jquery-1.8.3.min.js",
+                    "script.js"
+            ]
+            //"run_at": "document_idle"
         }
     ],
     "permissions": [
