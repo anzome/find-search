@@ -6,9 +6,10 @@ TODO
 
 */
 //declare vars for future assignment into functions 
-(function (window, document) {
+(function ($) {
 var inputs = [];
 var search_inputs = [];
+var backup_inputs = [];
 var search_amount = 0;
 var next_input = 0;
 
@@ -16,22 +17,15 @@ function init(){
     //assign vars once on a page load, use it on every event
     inputs = document.getElementsByTagName("input");
     toggle_mousetrap(document.activeElement);
-    console.log(inputs);
-
     if (inputs.length === 0) {
         return false;
     }
     else {
-        search_inputs = get_search_inputs(inputs);
-        console.log(search_inputs);
-        if (search_inputs.length > 0){
-            search_amount = search_inputs.length;
-            //console.log(search_amount);
-            return true;
+        get_search_inputs(inputs);
+        if (search_inputs.length === 0 && backup_inputs.length > 0){
+            search_inputs = backup_inputs
         }
-        else {
-            return false;
-        }
+        search_amount = search_inputs.length;
     };
 }
 
@@ -52,7 +46,7 @@ function get_search_inputs(inputs){
     var weight = 0;
     var parents;
 
-    for (var i = 0, input; i <= inputs.length-1; i++) {
+    for (var i = 0, input; i < inputs.length; i++) {
         input = inputs[i];
         if (min_check(input)){
             //element meets the minimal criteria
@@ -62,20 +56,19 @@ function get_search_inputs(inputs){
 
     //what if we have several inputs that passing minimal check?
     if (preliminary_list.length > 0) {
-        for (var i = 0, input; i <= preliminary_list.length-1; i++){
+        for (var i = 0, input; i < preliminary_list.length; i++){
             input = preliminary_list[i];
             input.parents = node_parents(input);
             if(check(input)){
                 search_inputs.push(input);
             }
         }
-    };
-
-    // do sorting on search_inputs 
-    if (search_inputs.length > 0) {return search_inputs}
-    //if we don't find inputs on a page or if all inputs is not for search
-    else {return false;}
-    
+        if (search_inputs.length === 0){
+            for (var i = 0, input; i < preliminary_list.length; i++){
+                backup_inputs.push(preliminary_list[i]);
+            }
+        }
+    }    
 }
 
 function node_parents(node){
@@ -94,7 +87,7 @@ function node_parents(node){
 
 function min_check(entity) {
     // if we got not text input elements
-    if ((entity.tagName.toLowerCase() === "input") && (entity.type.toLowerCase() !== "text")) {
+    if ((entity.type.toLowerCase() !== "text") || entity.style.display === "none") {
         return false;
     }
     else {
@@ -108,8 +101,9 @@ function check(entity){
     ones.unshift(entity);
     //checks everyone element in our list
     var find_search = /search/i;
+    var find_nav = /nav/i;
     var find_q = /^q$/i;
-    for (var i = 0, one; i <= ones.length - 1; i++){    
+    for (var i = 0, one; i < ones.length; i++){    
         one = ones[i];       
         if (find_q.test(one.id) || find_search.test(one.id)) {
             return true;
@@ -119,7 +113,18 @@ function check(entity){
         }
         else if (find_search.test(one.className)) {
             return true;
-        }        
+        }
+        else if (i > 0){
+            if (find_nav.test(one.id)){
+                return true;
+            }
+            else if (find_nav.test(one.name)) {
+                return true;
+            }
+            else if (find_nav.test(one.className)) {
+                return true;
+            }
+        }     
     }
     //if no item fits 
     return false;
@@ -140,13 +145,13 @@ function search_focus(){
     else {};
 }
 
-window.onload = function () {
-    if (init()){
+$(document).ready(function () {
+    init();
+    if (search_inputs.length > 0){
         //see mousetrap lib at http://craig.is/killing/mice
         Mousetrap.bind('ctrl+i', function(e, combo){
-            console.log(combo);
             search_focus();
         });        
     };
-}
-})(window, document);
+});
+})(jQuery);
