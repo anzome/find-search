@@ -158,6 +158,7 @@ $(document).ready(function () {
     init();
     if (search_inputs.length > 0){
         //see mousetrap lib at http://craig.is/killing/mice
+        _gaq.push(['_trackEvent', 'good', 'track', 'find the search', document.URL]);
         Mousetrap.bind('ctrl+i', function(e, combo){
             search_focus();
         });        
