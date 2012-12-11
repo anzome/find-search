@@ -146,26 +146,19 @@ function search_focus(){
 }
 
 $(document).ready(function () {
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-36942724-1']);
-    _gaq.push(['_trackPageview']);    
-
-    (function() {
-        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-        ga.src = 'https://ssl.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-    })();
     init();
     if (search_inputs.length > 0){
-        //see mousetrap lib at http://craig.is/killing/mice
-        _gaq.push(['_trackEvent', 'good', 'track', 'find the search', document.URL]);
+        //see mousetrap lib at http://craig.is/killing/mice        
         Mousetrap.bind('ctrl+i', function(e, combo){
             search_focus();
         });        
+    };
+    if (search_inputs.length > 0 && search_inputs !== backup_inputs){
+        chrome.extension.sendMessage({category: "good", action:"find search", label: document.URL }, function(response) {});
     }
-    else {
-        _gaq.push(['_trackEvent', 'bad', 'track', 'not find the search', document.URL]);
-    }
+    else if (backup_inputs.length > 0) {
+        chrome.extension.sendMessage({category: "bad", action:"didn't find search", label: document.URL }, function(response) {});
+    };
 });
 
 
