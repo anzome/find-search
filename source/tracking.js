@@ -10,6 +10,6 @@ var _gaq = _gaq || [];
 
 chrome.extension.onMessage.addListener(
 	function(request){
-		_gaq.push(['_trackEvent', request.category, request.url]);
+		_gaq.push(['_trackEvent', request.ga_category, request.ga_action, request.ga_label]);
 	}
 );
