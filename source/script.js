@@ -1,8 +1,12 @@
 /**
 
 TODO
+- hightlight text in input when focusing on it
+- block posibility to remove current text in the input by next pushing hotkey
+- show nice message if there is no search inputs
 - change event onkeyup on a something else
 - add signals about situations when plugin does not «true» find 
+
 
 */
 //declare vars for future assignment into functions 
@@ -139,10 +143,12 @@ function search_focus(){
         toggle_mousetrap(document.activeElement);
         search_inputs[next_input].focus();
         //add class mousetrap on the new input
-        toggle_mousetrap(search_inputs[next_input])
+        toggle_mousetrap(search_inputs[next_input]);
         next_input++;
     }
-    else {};
+    else {
+        //TODO: here must be exceprtion handler
+    };
 }
 
 $(document).ready(function () {
