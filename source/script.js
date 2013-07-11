@@ -160,10 +160,10 @@ $(document).ready(function () {
         });        
     };
     if (search_inputs.length > 0 && search_inputs !== backup_inputs){
-        chrome.extension.sendMessage({category: "good", action:"find search", label: document.URL }, function(response) {});
+        chrome.extension.sendMessage({ga_category: "good", ga_action:"find search", ga_label: document.URL }, function(response) {});
     }
     else if (backup_inputs.length > 0) {
-        chrome.extension.sendMessage({category: "bad", action:"didn't find search", label: document.URL }, function(response) {});
+        chrome.extension.sendMessage({ga_category: "bad", ga_action:"didn't find search", ga_label: document.URL }, function(response) {});
     };
 });
 
