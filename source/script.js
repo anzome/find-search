@@ -11,6 +11,7 @@ TODO
 */
 //declare vars for future assignment into functions 
 (function ($) {
+"use strict";
 var inputs = [];
 var search_inputs = [];
 var backup_inputs = [];
@@ -18,7 +19,6 @@ var search_amount = 0;
 var next_input = 0;
 
 function init(){
-    //assign vars once on a page load, use it on every event
     inputs = document.getElementsByTagName("input");
     toggle_mousetrap(document.activeElement);
     if (inputs.length === 0) {
@@ -35,7 +35,8 @@ function init(){
 
 function toggle_mousetrap(element){
     if (element.tagName.toLowerCase() === "input"){
-        mouse_re = / mousetrap/i
+        var mouse_re = / mousetrap/i;
+
         if (mouse_re.test(element.className)){
             element.className.replace(mouse_re, "");
         }
@@ -47,10 +48,8 @@ function toggle_mousetrap(element){
 
 function get_search_inputs(inputs){
     var preliminary_list = [];
-    var weight = 0;
-    var parents;
 
-    for (var i = 0, input; i < inputs.length; i++) {
+    for (var i = 0, input, len = inputs.length; i < len; i++) {
         input = inputs[i];
         if (min_check(input)){
             //element meets the minimal criteria
@@ -60,9 +59,8 @@ function get_search_inputs(inputs){
 
     //what if we have several inputs that passing minimal check?
     if (preliminary_list.length > 0) {
-        for (var i = 0, input; i < preliminary_list.length; i++){
+        for (var i = 0, input, len = preliminary_list.length; i < len; i++){
             input = preliminary_list[i];
-            input.parents = node_parents(input);
             if(check(input)){
                 search_inputs.push(input);
             }
@@ -138,7 +136,7 @@ function search_focus(){
     if (next_input > search_amount-1){
         next_input = 0;
     };
-    if(search_inputs[next_input]){
+    if (search_inputs[next_input]){
         //remove class mousetrap from input
         toggle_mousetrap(document.activeElement);
         search_inputs[next_input].focus();
@@ -151,6 +149,7 @@ function search_focus(){
     };
 }
 
+// The jQuery implementention of ready event is common and works across all browsers. 
 $(document).ready(function () {
     init();
     if (search_inputs.length > 0){
