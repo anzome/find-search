@@ -89,34 +89,51 @@ function node_parents(node){
 
 function min_check(entity) {
     // if we got not text input elements
-    if ((entity.type.toLowerCase() !== "text") || entity.style.display === "none") {
-        return false;
+    var input_type = entity.type.toLowerCase()
+    if ((input_type === "text" || input_type === "search") && entity.style.display !== "none") {
+        return true;
     }
     else {
-        return true;
+        return false;
     }
 }
 
 function check(entity){
     //makes full list of elements that we want to check (input itself and parents)
-    var ones = entity.parents;
-    ones.unshift(entity);
+    // var ones = entity.parents;
+    // ones.unshift(entity);
     //checks everyone element in our list
-    var find_search = /search/i;
-    var find_nav = /nav/i;
-    var find_q = /^q$/i;
-    for (var i = 0, one; i < ones.length; i++){    
-        one = ones[i];       
-        if (find_q.test(one.id) || find_search.test(one.id)) {
-            return true;
+    var find_search = /search/i,
+        find_nav = /nav/i,
+        find_q = /^q$/i;
+
+    var check_rules = function(one, parent){
+        // this element is parent?
+        if (typeof parent === 'undefined' || parent !== true){
+            parent = false;
         }
-        else if (find_search.test(one.name)) {
-            return true;
+
+        if (!parent){
+            // if we check input
+            if (one.type.toLowerCase() === "search"){
+                return true;
+            }
+            else if (find_q.test(one.id) || find_search.test(one.id)) {
+                return true;
+            }
+            else if (find_search.test(one.name)) {
+                return true;
+            }
+            else if (find_search.test(one.className)) {
+                return true;
+            }            
+            else if (find_search.test(one.placeholder)){
+                return true;
+            }
         }
-        else if (find_search.test(one.className)) {
-            return true;
-        }
-        else if (i > 0){
+        
+        else {
+            // if we check one of input's parents
             if (find_nav.test(one.id)){
                 return true;
             }
@@ -126,8 +143,35 @@ function check(entity){
             else if (find_nav.test(one.className)) {
                 return true;
             }
-        }     
+            else if (find_nav.test(one.action) || find_q.test(one.action)){
+                return true;
+            }
+        }
+        // if no one condition didn't work
+        return false;
+    };
+
+    var check_parents = function(node){
+        var parent = node.parentNode,
+            parent_name = parent.tagName.toLowerCase();
+        
+        if (parent_name !== ("body" || "html")){
+            if (check_rules(node, true)){
+                return true;
+            }
+            check_parents(parent);
+        }
+        // parents are bad too
+        return false;
     }
+
+    if (check_rules(entity)){
+        return true;
+    }
+    else {
+        return check_parents(entity);
+    }
+
     //if no item fits 
     return false;
 }
