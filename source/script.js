@@ -90,7 +90,8 @@ function node_parents(node){
 function min_check(entity) {
     // if we got not text input elements
     var input_type = entity.type.toLowerCase()
-    if ((input_type === "text" || input_type === "search") && entity.style.display !== "none") {
+    // only visible and enebled fields are allowed
+    if ((input_type === "text" || input_type === "search") && !$(entity).is(":hidden") && !$(entity).is(":disabled")) {
         return true;
     }
     else {

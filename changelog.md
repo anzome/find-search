@@ -1,8 +1,9 @@
 #v 0.3.3
 ##TODO
-- remove invisible fields from list like here - yandex.ru and http://news.mail.ru/foto/177798/66799/
 - do something with hot-key action while some input is active
 
+##READY
+- remove invisible fields from list like here - yandex.ru and http://news.mail.ru/foto/177798/66799/
 
 #v 0.3.2
 - some typos and comments
