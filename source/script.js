@@ -5,212 +5,207 @@ TODO
 - block posibility to remove current text in the input by next pushing hotkey
 - show nice message if there is no search inputs
 - change event onkeyup on a something else
-- add signals about situations when plugin does not «true» find 
+- add signals about situations when plugin does not «true» find
 
 
 */
-//declare vars for future assignment into functions 
-(function ($) {
-"use strict";
+
+//declare vars for future assignment into functions
+(function($) {
+'use strict';
 var inputs = [];
-var search_inputs = [];
-var backup_inputs = [];
-var search_amount = 0;
-var next_input = 0;
+var searchInputs = [];
+var backupInputs = [];
+var searchAmount = 0;
+var nextInput = 0;
 
-function init(){
-    inputs = document.getElementsByTagName("input");
-    toggle_mousetrap(document.activeElement);
-    if (inputs.length === 0) {
-        return false;
+function init() {
+  inputs = document.getElementsByTagName('input');
+  toggleMousetrap(document.activeElement);
+  if (inputs.length === 0) {
+    return false;
+  } else {
+    getSearchInputs(inputs);
+    if (searchInputs.length === 0 && backupInputs.length > 0) {
+      searchInputs = backupInputs;
     }
-    else {
-        get_search_inputs(inputs);
-        if (search_inputs.length === 0 && backup_inputs.length > 0){
-            search_inputs = backup_inputs
-        }
-        search_amount = search_inputs.length;
+
+    searchAmount = searchInputs.length;
+  };
+}
+
+function toggleMousetrap(element) {
+  if (element.tagName.toLowerCase() === 'input') {
+    var mouseRegExp = / mousetrap/i;
+
+    if (mouseRegExp.test(element.className)) {
+      element.className.replace(mouseRegExp, '');
+    } else {
+      element.setAttribute('class', element.className + ' mousetrap');
     };
+  };
 }
 
-function toggle_mousetrap(element){
-    if (element.tagName.toLowerCase() === "input"){
-        var mouse_re = / mousetrap/i;
+function getSearchInputs(inputs) {
+  var preliminaryList = [];
 
-        if (mouse_re.test(element.className)){
-            element.className.replace(mouse_re, "");
-        }
-        else {
-            element.setAttribute("class", element.className + " mousetrap");
-        };
-    };   
-}
-
-function get_search_inputs(inputs){
-    var preliminary_list = [];
-
-    for (var i = 0, input, len = inputs.length; i < len; i++) {
-        input = inputs[i];
-        if (min_check(input)){
-            //element meets the minimal criteria
-            preliminary_list.push(input);
-        };
-    }
+  for (var i = 0, input, len = inputs.length; i < len; i++) {
+    input = inputs[i];
+    if (minCheck(input)) {
+      //element meets the minimal criteria
+      preliminaryList.push(input);
+    };
+  }
 
     //what if we have several inputs that passing minimal check?
-    if (preliminary_list.length > 0) {
-        for (var i = 0, input, len = preliminary_list.length; i < len; i++){
-            input = preliminary_list[i];
-            if(check(input)){
-                search_inputs.push(input);
-            }
-        }
-        if (search_inputs.length === 0){
-            for (var i = 0, input; i < preliminary_list.length; i++){
-                backup_inputs.push(preliminary_list[i]);
-            }
-        }
-    }    
+  if (preliminaryList.length > 0) {
+    for (var i = 0, input, len = preliminaryList.length; i < len; i++) {
+      input = preliminaryList[i];
+      if (check(input)) {
+        searchInputs.push(input);
+      }
+    }
+
+    if (searchInputs.length === 0) {
+      for (var i = 0, input; i < preliminaryList.length; i++) {
+        backupInputs.push(preliminaryList[i]);
+      }
+    }
+  }
 }
 
-function node_parents(node){
+function nodeParents(node) {
     var list = [];
+
     //recursion returns all parents
-    function get_parent(node) {
-        var parent = node.parentNode;
-        if (parent.tagName.toLowerCase() !== ("body" || "html")){
-            list.push(parent);
-            get_parent(parent);
-        };
+    function getParent(node) {
+      var parent = node.parentNode;
+      if (parent.tagName.toLowerCase() !== ('body' || 'html')) {
+        list.push(parent);
+        getParent(parent);
+      };
     };
-    get_parent(node);
+
+    getParent(node);
     return list;
 }
 
-function min_check(entity) {
-    // if we got not text input elements
-    var input_type = entity.type.toLowerCase()
-    // only visible and enebled fields are allowed
-    if ((input_type === "text" || input_type === "search") && !$(entity).is(":hidden") && !$(entity).is(":disabled")) {
-        return true;
-    }
-    else {
-        return false;
-    }
+function minCheck(entity) {
+  // if we got not text input elements
+  var inputType = entity.type.toLowerCase();
+
+  // only visible and enebled fields are allowed
+  if ((inputType === 'text' || inputType === 'search') && !$(entity).is(':hidden') && !$(entity).is(':disabled')) {
+      return true;
+  } else {
+      return false;
+  }
 }
 
-function check(entity){
+function check(entity) {
     //makes full list of elements that we want to check (input itself and parents)
     // var ones = entity.parents;
     // ones.unshift(entity);
     //checks everyone element in our list
-    var find_search = /search/i,
-        find_nav = /nav/i,
-        find_q = /^q$/i;
+    var findSearch = /search/i;
+    var findNav = /nav/i;
+    var findQ = /^q$/i;
 
-    var check_rules = function(one, parent){
-        // this element is parent?
-        if (typeof parent === 'undefined' || parent !== true){
-            parent = false;
-        }
+    var checkRules = function(one, parent) {
+      // this element is parent?
+      if (typeof parent === 'undefined' || parent !== true) {
+        parent = false;
+      }
 
-        if (!parent){
-            // if we check input
-            if (one.type.toLowerCase() === "search"){
-                return true;
-            }
-            else if (find_q.test(one.id) || find_search.test(one.id)) {
-                return true;
-            }
-            else if (find_search.test(one.name)) {
-                return true;
-            }
-            else if (find_search.test(one.className)) {
-                return true;
-            }            
-            else if (find_search.test(one.placeholder)){
-                return true;
-            }
+      if (!parent) {
+        // if we check input
+        if (one.type.toLowerCase() === 'search') {
+          return true;
+        } else if (findQ.test(one.id) || findSearch.test(one.id)) {
+          return true;
+        } else if (findSearch.test(one.name)) {
+          return true;
+        } else if (findSearch.test(one.className)) {
+          return true;
+        } else if (findSearch.test(one.placeholder)) {
+          return true;
         }
-        
-        else {
-            // if we check one of input's parents
-            if (find_nav.test(one.id)){
-                return true;
-            }
-            else if (find_nav.test(one.name)) {
-                return true;
-            }
-            else if (find_nav.test(one.className)) {
-                return true;
-            }
-            else if (find_nav.test(one.action) || find_q.test(one.action)){
-                return true;
-            }
+      } else {
+          // if we check one of input's parents
+        if (findNav.test(one.id)) {
+          return true;
+        } else if (findNav.test(one.name)) {
+          return true;
+        } else if (findNav.test(one.className)) {
+          return true;
+        } else if (findNav.test(one.action) || findQ.test(one.action)) {
+          return true;
         }
-        // if no one condition didn't work
-        return false;
+      }
+
+      // if no one condition didn't work
+      return false;
     };
 
-    var check_parents = function(node){
-        var parent = node.parentNode,
-            parent_name = parent.tagName.toLowerCase();
-        
-        if (parent_name !== ("body" || "html")){
-            if (check_rules(node, true)){
-                return true;
-            }
-            check_parents(parent);
+    var checkParents = function(node) {
+      var parent = node.parentNode;
+      var parentName = parent.tagName.toLowerCase();
+
+      if (parentName !== ('body' || 'html')) {
+        if (checkRules(node, true)) {
+          return true;
         }
-        // parents are bad too
-        return false;
+
+        checkParents(parent);
+      }
+
+      // parents are bad too
+      return false;
+    };
+
+    if (checkRules(entity)) {
+      return true;
+    } else {
+      return checkParents(entity);
     }
 
-    if (check_rules(entity)){
-        return true;
-    }
-    else {
-        return check_parents(entity);
-    }
-
-    //if no item fits 
+    //if no item fits
     return false;
 }
 
-function search_focus(){
-    if (next_input > search_amount-1){
-        next_input = 0;
-    };
-    if (search_inputs[next_input]){
-        //remove class mousetrap from input
-        toggle_mousetrap(document.activeElement);
-        search_inputs[next_input].focus();
-        //add class mousetrap on the new input
-        toggle_mousetrap(search_inputs[next_input]);
-        next_input++;
+function searchFocus() {
+    if (nextInput > searchAmount - 1) {
+      nextInput = 0;
     }
-    else {
-        //TODO: here must be exceprtion handler
-    };
+
+    if (searchInputs[nextInput]) {
+      //remove class mousetrap from input
+      toggleMousetrap(document.activeElement);
+      searchInputs[nextInput].focus();
+
+      //add class mousetrap on the new input
+      toggleMousetrap(searchInputs[nextInput]);
+      nextInput++;
+    } else {
+      //TODO: here must be exceprtion handler
+    }
 }
 
-// The jQuery implementention of ready event is common and works across all browsers. 
-$(document).ready(function () {
-    init();
-    if (search_inputs.length > 0){
-        //see mousetrap lib at http://craig.is/killing/mice        
-        Mousetrap.bind('ctrl+i', function(e, combo){
-            search_focus();
-        });        
-    };
-    if (search_inputs.length > 0 && search_inputs !== backup_inputs){
-        chrome.extension.sendMessage({ga_category: "good", ga_action:"find search", ga_label: document.URL }, function(response) {});
-    }
-    else if (backup_inputs.length > 0) {
-        chrome.extension.sendMessage({ga_category: "bad", ga_action:"didn't find search", ga_label: document.URL }, function(response) {});
-    };
+// The jQuery implementention of ready event is common and works across all browsers.
+$(document).ready(function() {
+  init();
+  if (searchInputs.length > 0) {
+    //see mousetrap lib at http://craig.is/killing/mice
+    Mousetrap.bind('ctrl+i', function(e, combo) {
+      searchFocus();
+    });
+  }
+
+  if (searchInputs.length > 0 && searchInputs !== backupInputs) {
+    chrome.extension.sendMessage({ga_category: 'good', ga_action:'find search', ga_label: document.URL }, function(response) {});
+  } else if (backupInputs.length > 0) {
+    chrome.extension.sendMessage({ga_category: 'bad', ga_action:'did not find search', ga_label: document.URL }, function(response) {});
+  }
 });
-
-
 
 })(jQuery);

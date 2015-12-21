@@ -1,6 +1,7 @@
 var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-36942724-1']);
-    _gaq.push(['_trackPageview']);
+
+_gaq.push(['_setAccount', 'UA-36942724-1']);
+_gaq.push(['_trackPageview']);
 
 (function() {
     var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
@@ -9,7 +10,7 @@ var _gaq = _gaq || [];
 })();
 
 chrome.extension.onMessage.addListener(
-	function(request){
+	function(request) {
 		_gaq.push(['_trackEvent', request.ga_category, request.ga_action, request.ga_label]);
 	}
 );
