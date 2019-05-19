@@ -1,0 +1,20 @@
+{
+    "name": "find_search",
+    "version": "0.3.3",
+    "main": "index.js",
+    "repository": "https://github.com/anzome/find_search.git",
+    "author": "Aleksandr Zonov <blogknot@gmail.com>",
+    "license": "MIT",
+    "scripts": {
+        "build": "rollup -c rollup.config.js",
+        "fmt": "yarn prettier --write src/**.js"
+    },
+    "devDependencies": {
+        "babel-preset-es2015-rollup": "3.0.0",
+        "prettier": "1.17.1",
+        "rollup": "1.12.3",
+        "rollup-plugin-babel": "4.3.2",
+        "rollup-plugin-copy": "2.0.1",
+        "rollup-plugin-uglify": "6.0.2"
+    }
+}
