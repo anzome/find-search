@@ -1,0 +1,12 @@
+# To get all advantages of this file please use the plugin for your editor:
+# WebStorm - http://plugins.jetbrains.com/plugin/7294-editorconfig
+# VS Code - https://marketplace.visualstudio.com/items?itemName=EditorConfig.EditorConfig
+
+[*]
+indent_style = space
+indent_size = 4
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+max_line_length = off
