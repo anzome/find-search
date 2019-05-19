@@ -1,7 +1,7 @@
 {
-    "name":"Find the Search",
-    "version":"0.3.2",
-    "description":"Just use ctrl+i. After that plugin will find search field on the current site and will put cursor in it.",
+    "name": "Find the Search",
+    "version": "0.3.2",
+    "description": "Just use ctrl+i. After that plugin will find search field on the current site and will put cursor in it.",
     "icons": {
         "128": "images/icon.png",
         "48": "images/icon.png",
@@ -9,12 +9,21 @@
     },
     "content_scripts": [
         {
-            "matches": ["http://*/*", "https://*/*"],
-            "js": ["/third_apps/jquery-1.11.0.min.js","/third_apps/mousetrap.min.js", "script.js"]
+            "matches": [
+                "http://*/*",
+                "https://*/*"
+            ],
+            "js": [
+                "/third_apps/jquery-1.11.0.min.js",
+                "/third_apps/mousetrap.min.js",
+                "build.js"
+            ]
         }
     ],
     "background": {
-        "scripts": ["tracking.js"],
+        "scripts": [
+            "tracking.js"
+        ],
         "persistent": false
     },
     "permissions": [
