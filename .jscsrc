@@ -1,7 +1,0 @@
-{
-  "preset": "airbnb",
-  "validateLineBreaks": "CRLF",
-  "requireTrailingComma": false,
-  "validateIndentation": false,
-  "excludeFiles": ["D:\\projects\\rejis\\src\\scripts\\system.config.js"]
-}
